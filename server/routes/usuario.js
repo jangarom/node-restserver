@@ -5,12 +5,19 @@ const _ = require('underscore');
 
 const Usuario = require('../models/usuario');
 
+const { verificaToken, verificaAdminRole } = require('../middlewares/autenticacion');
+
 const app = express();
 
-app.get('/usuario', function(req, res) {
+app.get('/usuario', verificaToken, (req, res) => {
     // res.json('get usuario local')
 
-    // { estado:true}
+    return res.json({
+            usuario: req.usuario,
+            nombre: req.usuario.nombre,
+            email: req.usuario.email
+        })
+        // { estado:true}
 
     let desde = req.query.desde || 0; //si viene desde pagina, sino desde 0
     desde = Number(desde);
@@ -37,12 +44,11 @@ app.get('/usuario', function(req, res) {
                 });
             })
 
-
         }) //ejecutar ese find
 })
 
 //crear registros
-app.post('/usuario', function(req, res) {
+app.post('/usuario', [verificaToken, verificaAdminRole], function(req, res) {
     //obtener toda la información del POST
     let body = req.body;
 
@@ -87,7 +93,7 @@ app.post('/usuario', function(req, res) {
 
 //put --> sobretodo actualizar, :id especificar parametro a recibir
 //actualizar registro, obtener id y actualizar registro que coincida
-app.put('/usuario/:id', function(req, res) {
+app.put('/usuario/:id', [verificaToken, verificaAdminRole], function(req, res) {
     let id = req.params.id;
     let body = _.pick(req.body, ['nombre', 'email', 'img', 'role', 'estado']);
 
@@ -109,7 +115,7 @@ app.put('/usuario/:id', function(req, res) {
 })
 
 
-app.delete('/usuario/:id', function(req, res) {
+app.delete('/usuario/:id', [verificaToken, verificaAdminRole], function(req, res) {
     //recuperar el id del registro
     let id = req.params.id;
 

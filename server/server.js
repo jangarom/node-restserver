@@ -7,10 +7,15 @@ const app = express();
 
 const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: false }))
-    // parse application/json
+
+// parse application/json
 app.use(bodyParser.json())
 
-app.use(require('./routes/usuario'));
+// app.use(require('./routes/usuario'));
+// app.use(require('./routes/login'));
+
+//Configuración global de rutas.
+app.use(require('./routes/index'));
 
 //conexión con la base de datos
 mongoose.connect(process.env.URLDB, {
